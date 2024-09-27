@@ -10,7 +10,7 @@ import { faChartLine, faCommentSms, faEnvelope } from '@fortawesome/free-solid-s
 
 import { Breadcrumb, Button, Layout, Menu, ConfigProvider } from 'antd';
 import ptBR from 'antd/locale/pt_BR';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import Login from './components/Login'; // Componente de Login
 import Dashboard from './pages/Dashboard'; // Importe sua página Dashboard
 import SendWhatsApp from './pages/SendWhatsApp'; // Importe sua página SendWhatsApp
@@ -32,10 +32,10 @@ function getItem(label, key, icon, items) {
 }
 
 const items = [
-  getItem('Dashboard', '/dashboard', <FontAwesomeIcon icon={faChartLine} />),
-  getItem('WhatsApp', '/sendwhatsapp', <FontAwesomeIcon icon={faWhatsapp} />),
-  getItem('SMS', '/sendsms', <FontAwesomeIcon icon={faCommentSms} />),
-  getItem('E-mail', '/sendemail', <FontAwesomeIcon icon={faEnvelope} />),
+  getItem('Dashboard', `${import.meta.env.VITE_REACT_APP_PATH}/dashboard`, <FontAwesomeIcon icon={faChartLine} />),
+  getItem('WhatsApp', `${import.meta.env.VITE_REACT_APP_PATH}/sendwhatsapp`, <FontAwesomeIcon icon={faWhatsapp} />),
+  getItem('SMS', `${import.meta.env.VITE_REACT_APP_PATH}/sendsms`, <FontAwesomeIcon icon={faCommentSms} />),
+  getItem('E-mail', `${import.meta.env.VITE_REACT_APP_PATH}/sendemail`, <FontAwesomeIcon icon={faEnvelope} />),
 ];
 
 const App = () => {
@@ -105,7 +105,7 @@ const App = () => {
             <Button
               onClick={() => {
                 localStorage.clear();
-                window.location.href = '/';
+                window.location.href = `${import.meta.env.VITE_REACT_APP_PATH}`;
               }}
             >
               Logout
@@ -126,13 +126,16 @@ const App = () => {
             >
               {/* Definindo as rotas para Dashboard e SendWhatsApp */}
               <Routes>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/sendwhatsapp" element={<SendWhatsApp />} />
+                <Route path="/" element={<Navigate to={`${import.meta.env.VITE_REACT_APP_PATH}/dashboard`} />} />
+                <Route path={`${import.meta.env.VITE_REACT_APP_PATH}/dashboard`} element={<Dashboard />} />
+                <Route path={`${import.meta.env.VITE_REACT_APP_PATH}/sendwhatsapp`} element={<SendWhatsApp />} />
               </Routes>
+
             </div>
           </Content>
           <Footer style={{ textAlign: 'center' }}>
             Portal RH ©{new Date().getFullYear()} Um produto Nexus Tech
+            
           </Footer>
         </Layout>
       </Layout>

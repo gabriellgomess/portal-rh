@@ -14,17 +14,17 @@ function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // If user is authenticated, navigate to the dashboard
     if (isAuth) {
       navigate(`${import.meta.env.VITE_REACT_APP_PATH}/dashboard`);
     }
   }, [isAuth, navigate]);
+  
 
   // Showing Login Or Register Page According to the condition
   if (showLogin) {
     return (
       <div>
-        <Login />
+        <Login />        
       </div>
     );
   } else {
