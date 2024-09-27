@@ -23,7 +23,7 @@ function Home() {
   // Showing Login Or Register Page According to the condition
   if (showLogin) {
     return (
-      <div>
+      <div style={{border: '1px solid red'}}>
         <Login />        
       </div>
     );

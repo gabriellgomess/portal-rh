@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Form, Input, Button, Typography, Card } from "antd";
 import { MyContext } from "../contexts/MyContext";
+import BgLogin from "../assets/bg-login-min.jpg";
 
 function Login() {
   const { toggleNav, loginUser, isLoggedIn } = useContext(MyContext);
@@ -61,35 +62,42 @@ function Login() {
   }
 
   return (
-    <Card
-    title="Login"
-    bordered={false}
-    style={{
-      width: 350,
-    }}
-  >
-    <Form onFinish={submitForm} layout="vertical">
-      <Form.Item label="E-mail">
-        <Input
-          name="email"
-          type="user"
-          value={state.userInfo.email}
-          onChange={onChangeValue}
-        />
-      </Form.Item>
-      <Form.Item label="Senha">
-        <Input.Password name="password" value={state.userInfo.password} onChange={onChangeValue} />
-      </Form.Item>
-      {errorMsg}
-      {successMsg}
-      <Button type="primary" htmlType="submit">
-        Entrar
-      </Button>
-    </Form>
-    <Button onClick={toggleNav} variant="outlined">
-          Cadastrar
-        </Button>
-    </Card>
+    <div style={{ backgroundImage: `url(${BgLogin})`, width: '100vw', height: '100vh', backgroundSize: 'cover', display: 'flex', justifyContent: 'end' }}>
+      <div style={{ background: 'grey', opacity: '0.5', height: '100vh', display: 'flex', alignItems: 'center', padding: '0 20px' }}>
+        <Card
+          title="Login"
+          bordered={false}
+          style={{
+            width: 350,
+          }}
+          
+        >
+          <Form onFinish={submitForm} layout="vertical">
+            <Form.Item label="E-mail">
+              <Input
+                name="email"
+                type="user"
+                value={state.userInfo.email}
+                onChange={onChangeValue}
+              />
+            </Form.Item>
+            <Form.Item label="Senha">
+              <Input.Password name="password" value={state.userInfo.password} onChange={onChangeValue} />
+            </Form.Item>
+            {errorMsg}
+            {successMsg}
+            <Button type="primary" htmlType="submit">
+              Entrar
+            </Button>
+          </Form>
+          <Button onClick={toggleNav} variant="outlined">
+            Cadastrar
+          </Button>
+        </Card>
+      </div>
+
+    </div>
+
   );
 }
 
