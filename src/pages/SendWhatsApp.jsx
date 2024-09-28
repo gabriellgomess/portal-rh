@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Modal, Table, Form, Row, Col, Card, Button, Upload, Typography, Spin, message, Input } from 'antd';
+import { Modal, Table, Form, Button, Upload, Typography, Spin, message, Input, Tabs } from 'antd';
 import { FileExcelOutlined, UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 
 const { Title } = Typography;
 const { TextArea } = Input;
+const { TabPane } = Tabs;
 
 const SendWhatsApp = () => {
   const [numbersAndMessages, setNumbersAndMessages] = useState([]);
@@ -52,7 +53,7 @@ const SendWhatsApp = () => {
 
           return {
             number: result.number,
-            status: parsedResult.error ? 'Erro' : 'Sucesso', // Mantém a lógica de erro e sucesso
+            status: parsedResult.error ? 'Erro' : 'Sucesso',
             message: parsedResult.message || 'Requisição processada com sucesso',
           };
         });
@@ -71,7 +72,7 @@ const SendWhatsApp = () => {
   // Função para baixar a planilha modelo
   const downloadTemplate = () => {
     const link = document.createElement('a');
-    link.href = '/assets/planilha_modelo.xlsx'; // O caminho para sua planilha modelo
+    link.href = 'https://portal-rh.nexustech.net.br/api/modelo/planilha_modelo.xlsx'; // O caminho para sua planilha modelo
     link.download = 'planilha_modelo.xlsx'; // Nome que será exibido ao baixar o arquivo
     link.click();
   };
@@ -108,80 +109,85 @@ const SendWhatsApp = () => {
 
   const columns = [
     { title: 'Número', dataIndex: 'number', key: 'number' },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status) => (
-        <span style={{ color: status === 'Sucesso' ? 'green' : 'red' }}>{status}</span>
-      ),
-    },
-    { title: 'Mensagem', dataIndex: 'message', key: 'message' },
+    { title: 'Mensagem', dataIndex: 'text', key: 'text' },
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div>
       <Title level={3}>Envio de mensagens via WhatsApp</Title>
+      <Tabs defaultActiveKey="1">
+        <TabPane tab="Envio em Massa" key="1">
+          {/* Seção de envio em massa */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: '300px' }}>
+              <Title level={5}>
+                É possível carregar uma planilha contendo as colunas{' '}
+                <span style={{ fontWeight: 'bold' }} translate="no" lang="en">
+                  number
+                </span>{' '}
+                e{' '}
+                <span style={{ fontWeight: 'bold' }} translate="no" lang="en">
+                  message
+                </span>{' '}
+                contendo os números de telefone e as mensagens.
+              </Title>
+              <Title level={5}>No botão abaixo, é possível baixar a planilha modelo.</Title>
+              <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+                <Button onClick={downloadTemplate}>
+                  Baixar Planilha Modelo <FileExcelOutlined />
+                </Button>
+                <Upload beforeUpload={handleFileUpload} showUploadList={false}>
+                  <Button icon={<UploadOutlined />}>Carregar Excel/CSV</Button>
+                </Upload>
+              </div>
+              <Button
+                type="primary"
+                onClick={sendMessagesInBulk}
+                style={{ marginTop: '10px', width: '100%' }}
+              >
+                Enviar Mensagens em Massa
+              </Button>
+            </div>
 
-      {/* Seção de envio em massa */}
-      <Card
-        title="Layout da Planilha"
-        bordered={false}
-        actions={[
-          <Button onClick={downloadTemplate} key="download">
-            Baixar Planilha Modelo <FileExcelOutlined />
-          </Button>,
-        ]}
-        style={{ width: '100%', maxWidth: '600px', marginBottom: '20px' }}
-      >
-        <p>
-          É possível carregar uma planilha contendo as colunas{' '}
-          <span style={{ fontWeight: 'bold' }} translate="no" lang="en">
-            number
-          </span>{' '}
-          e{' '}
-          <span style={{ fontWeight: 'bold' }} translate="no" lang="en">
-            message
-          </span>{' '}
-          contendo os números de telefone e as mensagens.
-        </p>
-      </Card>
+            {/* Tabela de pré-visualização */}
+            <div style={{ flex: 1, minWidth: '300px' }}>
+              {numbersAndMessages.length > 0 && (
+                <>
+                  <Title level={5}>Prévia dos Dados Carregados</Title>
+                  <Table
+                    columns={columns}
+                    dataSource={numbersAndMessages}
+                    rowKey="number"
+                    pagination={{ pageSize: 5 }}
+                  />
+                </>
+              )}
+            </div>
+          </div>
+        </TabPane>
 
-      <Upload beforeUpload={handleFileUpload} showUploadList={false}>
-        <Button icon={<UploadOutlined />}>Carregar Excel/CSV</Button>
-      </Upload>
-
-      <Button
-        type="primary"
-        onClick={sendMessagesInBulk}
-        style={{ marginTop: '10px', width: '100%', maxWidth: '600px' }}
-        block
-      >
-        Enviar Mensagens em Massa
-      </Button>
-
-      {/* Seção de mensagem individual */}
-      <Card title="Enviar Mensagem Individual" bordered={false} style={{ width: '100%', maxWidth: '600px', marginTop: '20px' }}>
-        <Form form={form} onFinish={handleFormSubmit} layout="vertical">
-          <Form.Item
-            name="number"
-            label="Número"
-            rules={[{ required: true, message: 'Por favor, insira o número de telefone' }]}
-          >
-            <Input addonBefore="+55" placeholder="Número de telefone" />
-          </Form.Item>
-          <Form.Item
-            name="message"
-            label="Mensagem"
-            rules={[{ required: true, message: 'Por favor, insira a mensagem' }]}
-          >
-            <TextArea placeholder="Mensagem" rows={4} />
-          </Form.Item>
-          <Button type="primary" htmlType="submit" block>
-            Enviar
-          </Button>
-        </Form>
-      </Card>
+        <TabPane tab="Envio Individual" key="2">
+          <Form form={form} onFinish={handleFormSubmit} layout="vertical" style={{ maxWidth: '600px' }}>
+            <Form.Item
+              name="number"
+              label="Número"
+              rules={[{ required: true, message: 'Por favor, insira o número de telefone' }]}
+            >
+              <Input placeholder="Número de telefone" />
+            </Form.Item>
+            <Form.Item
+              name="message"
+              label="Mensagem"
+              rules={[{ required: true, message: 'Por favor, insira a mensagem' }]}
+            >
+              <TextArea placeholder="Mensagem" rows={4} />
+            </Form.Item>
+            <Button type="primary" htmlType="submit" block>
+              Enviar
+            </Button>
+          </Form>
+        </TabPane>
+      </Tabs>
 
       {/* Modal de resultados */}
       <Modal

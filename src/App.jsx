@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // Ícones de marcas
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 // Ícones sólidos
-import { faChartLine, faCommentSms, faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faChartLine, faCommentSms, faEnvelope, faUser } from '@fortawesome/free-solid-svg-icons';
 
 
 import { Breadcrumb, Button, Layout, Menu, ConfigProvider } from 'antd';
@@ -37,6 +37,7 @@ const items = [
   getItem('WhatsApp', `${import.meta.env.VITE_REACT_APP_PATH}/sendwhatsapp`, <FontAwesomeIcon icon={faWhatsapp} />,),
   getItem('SMS', `${import.meta.env.VITE_REACT_APP_PATH}/sendsms`, <FontAwesomeIcon icon={faCommentSms} />),
   getItem('E-mail', `${import.meta.env.VITE_REACT_APP_PATH}/sendemail`, <FontAwesomeIcon icon={faEnvelope} />),
+  getItem('Usuários', `${import.meta.env.VITE_REACT_APP_PATH}/users`, <FontAwesomeIcon icon={faUser} />),
 ];
 
 const App = () => {
