@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -12,8 +12,9 @@ import { Breadcrumb, Button, Layout, Menu, ConfigProvider } from 'antd';
 import ptBR from 'antd/locale/pt_BR';
 import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import Login from './components/Login'; // Componente de Login
-import Dashboard from './pages/Dashboard'; // Importe sua página Dashboard
-import SendWhatsApp from './pages/SendWhatsApp'; // Importe sua página SendWhatsApp
+import Dashboard from './pages/Dashboard'; // página Dashboard
+import SendWhatsApp from './pages/SendWhatsApp'; // página SendWhatsApp
+import SendSMS from './pages/SendSMS'; // página SendSMS
 import { MyContext } from './contexts/MyContext';
 
 import LogoH from './assets/logo_horizontal_color_1.png';
@@ -33,7 +34,7 @@ function getItem(label, key, icon, items) {
 
 const items = [
   getItem('Dashboard', `${import.meta.env.VITE_REACT_APP_PATH}/dashboard`, <FontAwesomeIcon icon={faChartLine} />),
-  getItem('WhatsApp', `${import.meta.env.VITE_REACT_APP_PATH}/sendwhatsapp`, <FontAwesomeIcon icon={faWhatsapp} />),
+  getItem('WhatsApp', `${import.meta.env.VITE_REACT_APP_PATH}/sendwhatsapp`, <FontAwesomeIcon icon={faWhatsapp} />,),
   getItem('SMS', `${import.meta.env.VITE_REACT_APP_PATH}/sendsms`, <FontAwesomeIcon icon={faCommentSms} />),
   getItem('E-mail', `${import.meta.env.VITE_REACT_APP_PATH}/sendemail`, <FontAwesomeIcon icon={faEnvelope} />),
 ];
@@ -83,6 +84,7 @@ const App = () => {
             style={{ background: customTheme.token.colorBgMenus }}
             selectedKeys={[location.pathname]} // Use location.pathname como selectedKeys
             mode="inline"
+            theme='dark'
           >
             {items.map((item) => (
               <Menu.Item key={item.key} icon={item.icon}>
@@ -129,6 +131,7 @@ const App = () => {
                 <Route path="/" element={<Navigate to={`${import.meta.env.VITE_REACT_APP_PATH}/dashboard`} />} />
                 <Route path={`${import.meta.env.VITE_REACT_APP_PATH}/dashboard`} element={<Dashboard />} />
                 <Route path={`${import.meta.env.VITE_REACT_APP_PATH}/sendwhatsapp`} element={<SendWhatsApp />} />
+                <Route path={`${import.meta.env.VITE_REACT_APP_PATH}/sendsms`} element={<SendSMS />} />
               </Routes>
 
             </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Table, Form, Row, Col, Card, Button, Upload, Typography, Spin, message, Input } from 'antd';
+import { Modal, Table, Form, Flex, Card, Button, Upload, Typography, Spin, message, Input } from 'antd';
 import { FileExcelOutlined, UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
@@ -7,7 +7,7 @@ import * as XLSX from 'xlsx';
 const { Title } = Typography;
 const { TextArea } = Input;
 
-const SendWhatsApp = () => {
+const SendSMS = () => {
   const [numbersAndMessages, setNumbersAndMessages] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalData, setModalData] = useState([]);
@@ -24,8 +24,8 @@ const SendWhatsApp = () => {
       const worksheet = workbook.Sheets[sheetName];
       const json = XLSX.utils.sheet_to_json(worksheet);
       const formattedData = json.map((entry) => ({
-        number: `55${entry.number}`,
-        text: entry.message,
+        number: entry.number,
+        message: entry.message,
       }));
       setNumbersAndMessages(formattedData);
       message.success('Arquivo carregado com sucesso!');
@@ -42,7 +42,7 @@ const SendWhatsApp = () => {
     }
     setLoading(true);
     try {
-      const response = await axios.post('https://portal-rh.nexustech.net.br/api/whatsapp-nexus/', {
+      const response = await axios.post('https://portal-rh.nexustech.net.br/api/sms-nexus/', {
         messages: numbersAndMessages,
       });
 
@@ -59,30 +59,56 @@ const SendWhatsApp = () => {
         setModalData(processedData);
         setModalVisible(true); // Exibe o modal independentemente do status
       } else {
-        message.error('Erro ao processar as mensagens.');
+        handleErrorResponse(response);
       }
     } catch (error) {
-      message.error('Erro ao enviar as mensagens.');
+      handleNetworkError(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Função para tratamento de erros específicos com base nos status HTTP da API
+  const handleErrorResponse = (response) => {
+    const status = response.status;
+    if (status === 400) {
+      message.error('Erro: Parâmetros inválidos ou informações insuficientes.');
+    } else if (status === 401) {
+      message.error('Erro de autenticação: Chave de acesso inválida ou usuário desativado.');
+    } else if (status === 500) {
+      message.error('Erro no servidor: Tente novamente mais tarde.');
+    } else if (status === 503) {
+      message.error('Erro de timeout: Não foi possível conectar ao endpoint.');
+    } else {
+      message.error('Erro desconhecido: Verifique os dados enviados.');
+    }
+  };
+
+  // Tratamento de erros de rede ou falhas inesperadas
+  const handleNetworkError = (error) => {
+    if (error.response) {
+      handleErrorResponse(error.response);
+    } else if (error.request) {
+      message.error('Erro de rede: Não foi possível alcançar o servidor.');
+    } else {
+      message.error('Erro desconhecido: ' + error.message);
     }
   };
 
   // Função para baixar a planilha modelo
   const downloadTemplate = () => {
     const link = document.createElement('a');
-    link.href = '/assets/planilha_modelo.xlsx'; // O caminho para sua planilha modelo
-    link.download = 'planilha_modelo.xlsx'; // Nome que será exibido ao baixar o arquivo
+    link.href = '/assets/planilha_modelo_sms.xlsx'; // O caminho para sua planilha modelo
+    link.download = 'planilha_modelo_sms.xlsx'; // Nome que será exibido ao baixar o arquivo
     link.click();
   };
 
   // Função para enviar mensagem individual via formulário
   const handleFormSubmit = async (values) => {
     const { number, message: text } = values;
-    const formattedNumber = `55${number}`;
     try {
-      const response = await axios.post('https://portal-rh.nexustech.net.br/api/whatsapp-nexus/', {
-        messages: [{ number: formattedNumber, text }],
+      const response = await axios.post('https://portal-rh.nexustech.net.br/api/sms/', {
+        messages: [{ number, message: text }],
       });
 
       if (response.data.status === 'success') {
@@ -98,10 +124,10 @@ const SendWhatsApp = () => {
         setModalData(processedData);
         setModalVisible(true); // Exibe o modal independentemente do status
       } else {
-        message.error('Erro ao processar a mensagem.');
+        handleErrorResponse(response);
       }
     } catch (error) {
-      message.error('Erro ao enviar a mensagem.');
+      handleNetworkError(error);
     }
     form.resetFields();
   };
@@ -120,11 +146,12 @@ const SendWhatsApp = () => {
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <Title level={3}>Envio de mensagens via WhatsApp</Title>
-
+    <div>
+      <Title level={3}>Envio de mensagens via SMS</Title>
       {/* Seção de envio em massa */}
-      <Card
+      <Flex>
+        <Flex vertical  style={{flexFlow: '1'}}>
+        <Card
         title="Layout da Planilha"
         bordered={false}
         actions={[
@@ -146,11 +173,11 @@ const SendWhatsApp = () => {
           contendo os números de telefone e as mensagens.
         </p>
       </Card>
-
+        {/* Upload */}
       <Upload beforeUpload={handleFileUpload} showUploadList={false}>
         <Button icon={<UploadOutlined />}>Carregar Excel/CSV</Button>
       </Upload>
-
+        {/* botão de upload */}
       <Button
         type="primary"
         onClick={sendMessagesInBulk}
@@ -159,8 +186,8 @@ const SendWhatsApp = () => {
       >
         Enviar Mensagens em Massa
       </Button>
-
-      {/* Seção de mensagem individual */}
+      </Flex>
+      <Flex style={{flexFlow: '1'}}>
       <Card title="Enviar Mensagem Individual" bordered={false} style={{ width: '100%', maxWidth: '600px', marginTop: '20px' }}>
         <Form form={form} onFinish={handleFormSubmit} layout="vertical">
           <Form.Item
@@ -168,7 +195,7 @@ const SendWhatsApp = () => {
             label="Número"
             rules={[{ required: true, message: 'Por favor, insira o número de telefone' }]}
           >
-            <Input addonBefore="+55" placeholder="Número de telefone" />
+            <Input placeholder="Número de telefone" />
           </Form.Item>
           <Form.Item
             name="message"
@@ -182,6 +209,11 @@ const SendWhatsApp = () => {
           </Button>
         </Form>
       </Card>
+      </Flex>
+      </Flex>
+      
+
+
 
       {/* Modal de resultados */}
       <Modal
@@ -204,4 +236,4 @@ const SendWhatsApp = () => {
   );
 };
 
-export default SendWhatsApp;
+export default SendSMS;
