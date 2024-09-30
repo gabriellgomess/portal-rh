@@ -1,9 +1,9 @@
 import React, { useContext, useState } from "react";
-import { Form, Input, Button, Typography, Card } from "antd";
+import { Form, Input, Button, Typography, Card, theme } from "antd";
 import { MyContext } from "../contexts/MyContext";
 import BgLogin from "../assets/bg-login-min.jpg";
 
-function Login() {
+function Login(props) {
   const { toggleNav, loginUser, isLoggedIn } = useContext(MyContext);
 
   const initialState = {
@@ -62,13 +62,15 @@ function Login() {
   }
 
   return (
-    <div style={{ backgroundImage: `url(${BgLogin})`, width: '100vw', height: '100vh', backgroundSize: 'cover', display: 'flex', justifyContent: 'end' }}>
-      <div style={{ background: 'grey', opacity: '0.5', height: '100vh', display: 'flex', alignItems: 'center', padding: '0 20px' }}>
+    <div style={{ backgroundImage: `url(${BgLogin})`, width: '100vw', height: '100vh', backgroundSize: 'cover', backgroundPosition: '50%', display: 'flex', justifyContent: 'end' }}>
+      <div style={{ background: 'rgba(32, 32, 32, 0.35)', backdropFilter: 'blur(5.5px)', height: '100vh', display: 'flex', alignItems: 'center', padding: '0 50px' }}>
         <Card
           title="Login"
           bordered={false}
           style={{
             width: 350,
+            background: props.theme.token.colorBgMenus,
+            opacity: '1',
           }}
           
         >
@@ -86,13 +88,13 @@ function Login() {
             </Form.Item>
             {errorMsg}
             {successMsg}
-            <Button type="primary" htmlType="submit">
+            <Button color="default" htmlType="submit">
               Entrar
             </Button>
           </Form>
-          <Button onClick={toggleNav} variant="outlined">
+          {/* <Button onClick={toggleNav} variant="outlined">
             Cadastrar
-          </Button>
+          </Button> */}
         </Card>
       </div>
 

@@ -89,9 +89,9 @@ function Register() {
           </Button>
         </div>
       </Form>
-      <div>
+      {/* <div>
         <Button variant="outlined" onClick={toggleNav}>Entrar</Button>
-      </div>
+      </div> */}
     </Card>
   );
 }

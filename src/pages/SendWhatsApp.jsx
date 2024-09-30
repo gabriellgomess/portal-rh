@@ -47,27 +47,30 @@ const SendWhatsApp = () => {
         messages: numbersAndMessages,
       });
 
-      if (response.data.status === 'success') {
-        const processedData = response.data.results.map((result) => {
-          const parsedResult = result.response || {}; // Verifica se a resposta existe
+      const processedData = response.data.results.map((result) => {
+        const parsedResult = result.response || {}; // Verifica se a resposta existe
 
-          return {
-            number: result.number,
-            status: parsedResult.error ? 'Erro' : 'Sucesso',
-            message: parsedResult.message || 'Requisição processada com sucesso',
-          };
-        });
-        setModalData(processedData);
-        setModalVisible(true); // Exibe o modal independentemente do status
-      } else {
-        message.error('Erro ao processar as mensagens.');
-      }
+        return {
+          number: result.number,
+          status: parsedResult.error ? 'Erro' : 'Sucesso',
+          message: parsedResult.error
+            ? parsedResult.message || 'Erro desconhecido'
+            : 'Requisição processada com sucesso',
+        };
+      });
+
+      setModalData(processedData);
+      setModalVisible(true); // Exibe o modal independentemente do status
+
     } catch (error) {
       message.error('Erro ao enviar as mensagens.');
+      // Você pode logar o erro para debug
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
+
 
   // Função para baixar a planilha modelo
   const downloadTemplate = () => {
@@ -107,10 +110,12 @@ const SendWhatsApp = () => {
     form.resetFields();
   };
 
-  const columns = [
-    { title: 'Número', dataIndex: 'number', key: 'number' },
-    { title: 'Mensagem', dataIndex: 'text', key: 'text' },
-  ];
+  const closeModal = () => {
+    // limpar preview e inputs
+    setNumbersAndMessages([]);
+    form.resetFields();
+    setModalVisible(false);
+  }
 
   return (
     <div>
@@ -155,7 +160,10 @@ const SendWhatsApp = () => {
                 <>
                   <Title level={5}>Prévia dos Dados Carregados</Title>
                   <Table
-                    columns={columns}
+                    columns={[
+                      { title: 'Número', dataIndex: 'number', key: 'number' },
+                      { title: 'Mensagem', dataIndex: 'text', key: 'text' },
+                    ]}
                     dataSource={numbersAndMessages}
                     rowKey="number"
                     pagination={{ pageSize: 5 }}
@@ -193,12 +201,23 @@ const SendWhatsApp = () => {
       <Modal
         title="Resultados do Envio"
         visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        footer={<Button onClick={() => setModalVisible(false)}>Fechar</Button>}
+        onCancel={closeModal}
+        footer={<Button onClick={closeModal}>Fechar</Button>}
         width={800}
       >
-        <Table columns={columns} dataSource={modalData} rowKey="number" pagination={false} />
+        <Table
+          columns={[
+            { title: 'Número', dataIndex: 'number', key: 'number' },
+            { title: 'Status', dataIndex: 'status', key: 'status' },
+            { title: 'Mensagem', dataIndex: 'message', key: 'message' },
+          ]}
+          dataSource={modalData}
+          rowKey="number"
+          pagination={false}
+        />
       </Modal>
+
+
 
       {/* Spinner de loading */}
       {loading && (

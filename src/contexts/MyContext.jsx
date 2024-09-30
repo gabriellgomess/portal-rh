@@ -5,7 +5,7 @@ export const MyContext = createContext();
 
 // Define the base URL
 const Axios = axios.create({
-  baseURL: `${import.meta.env.VITE_REACT_APP_URL}/api-portal-rh/login/`,
+  baseURL: `${import.meta.env.VITE_REACT_APP_URL}/api/login/`,
 });
 
 const MyContextProvider = ({ children }) => {

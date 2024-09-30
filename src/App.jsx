@@ -15,6 +15,8 @@ import Login from './components/Login'; // Componente de Login
 import Dashboard from './pages/Dashboard'; // página Dashboard
 import SendWhatsApp from './pages/SendWhatsApp'; // página SendWhatsApp
 import SendSMS from './pages/SendSMS'; // página SendSMS
+import SendMail from './pages/SendMail'; // página SendMail
+import Users from './pages/Users'; // página Users
 import { MyContext } from './contexts/MyContext';
 
 import LogoH from './assets/logo_horizontal_color_1.png';
@@ -33,10 +35,10 @@ function getItem(label, key, icon, items) {
 }
 
 const items = [
-  getItem('Dashboard', `${import.meta.env.VITE_REACT_APP_PATH}/dashboard`, <FontAwesomeIcon icon={faChartLine} />),
+  getItem('Dashboard (breve)', `${import.meta.env.VITE_REACT_APP_PATH}/dashboard`, <FontAwesomeIcon icon={faChartLine} />),
   getItem('WhatsApp', `${import.meta.env.VITE_REACT_APP_PATH}/sendwhatsapp`, <FontAwesomeIcon icon={faWhatsapp} />,),
   getItem('SMS', `${import.meta.env.VITE_REACT_APP_PATH}/sendsms`, <FontAwesomeIcon icon={faCommentSms} />),
-  getItem('E-mail', `${import.meta.env.VITE_REACT_APP_PATH}/sendemail`, <FontAwesomeIcon icon={faEnvelope} />),
+  getItem('E-mail (breve)', `${import.meta.env.VITE_REACT_APP_PATH}/sendemail`, <FontAwesomeIcon icon={faEnvelope} />),
   getItem('Usuários', `${import.meta.env.VITE_REACT_APP_PATH}/users`, <FontAwesomeIcon icon={faUser} />),
 ];
 
@@ -71,7 +73,7 @@ const App = () => {
 
   // Se o usuário não está autenticado, mostra a tela de login
   if (!isAuth) {
-    return <Login />;
+    return <Login theme={customTheme} />;
   }
 
   // Caso o usuário esteja autenticado, mostra o conteúdo do app
@@ -108,7 +110,7 @@ const App = () => {
             <Button
               onClick={() => {
                 localStorage.clear();
-                window.location.href = `${import.meta.env.VITE_REACT_APP_PATH}`;
+                window.location.href = `/`;
               }}
             >
               Logout
@@ -133,6 +135,8 @@ const App = () => {
                 <Route path={`${import.meta.env.VITE_REACT_APP_PATH}/dashboard`} element={<Dashboard />} />
                 <Route path={`${import.meta.env.VITE_REACT_APP_PATH}/sendwhatsapp`} element={<SendWhatsApp />} />
                 <Route path={`${import.meta.env.VITE_REACT_APP_PATH}/sendsms`} element={<SendSMS />} />
+                <Route path={`${import.meta.env.VITE_REACT_APP_PATH}/sendemail`} element={<SendMail />} />
+                <Route path={`${import.meta.env.VITE_REACT_APP_PATH}/users`} element={<Users />} />
               </Routes>
 
             </div>
